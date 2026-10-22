@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanStreet - Garbage Collection System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styling.css">
+</head>
+<body>
+
+<nav class="switcher" aria-label="Demo screen switcher">
+  <button class="on" data-s="landing">Landing</button>
+  <button data-s="worker">Worker</button>
+  <button data-s="public">Public</button>
+  <button data-s="admin">Admin</button>
+</nav>
+
+<!-- 1. LANDING -->
+<main id="landing" class="screen on">
+  <section class="hero">
+    <div class="brand" style="color:#fff;margin-bottom:20px">CleanStreet</div>
+    <h1>Know when your garbage is collected, and prove it when it isn't.</h1>
+    <p>Workers are tracked by GPS, residents confirm every pickup, and authorities act when a street reports a miss.</p>
+    <div class="row"><button class="btn green" onclick="go('public')">Sign up</button><button class="btn ghost" style="color:#fff;border-color:#fff">Log in</button></div>
+  </section>
+  <h2>Continue as</h2>
+  <div class="roles">
+    <button class="role" onclick="go('public')"><h3>Resident</h3><p class="muted">Track pickups, confirm collection, report problems.</p></button>
+    <button class="role" onclick="go('worker')"><h3>Garbage collector</h3><p class="muted">See your route and confirm streets you collect.</p></button>
+    <button class="role" onclick="go('admin')"><h3>Authority</h3><p class="muted">Manage workers, routes and complaints.</p></button>
+  </div>
+</main>
+
+<!-- 2. WORKER -->
+<main id="worker" class="screen">
+  <div class="topbar"><div class="brand">Worker: Ravi K.</div>
+    <div class="row"><span class="badge b-done">On duty, GPS active</span><button class="btn ghost">End duty</button></div></div>
+  <div class="grid">
+    <section class="card wide"><h2>Today's route: Jayanagar 4th Block</h2><div class="map" id="worker-map">Map goes here (Leaflet): route, worker dot, street colours</div></section>
+
+    <section class="card">
+      <h2>Current street: 12th Main</h2>
+      <p class="muted">Stay on the street for 3-4 minutes to unlock confirmation.</p>
+      <div class="timer" id="timer">00:00</div>
+      <div class="bar"><i id="bar"></i></div>
+      <div class="row" style="margin-bottom:12px"><span class="badge b-pending" id="st-visit">Street not visited yet</span><span class="badge b-pending" id="st-coll">Collection not confirmed</span></div>
+      <button class="btn green big" id="confirm" disabled>Confirm garbage collected</button>
+      <button class="btn ghost big" style="margin-top:8px" id="sim">Demo: simulate arrival</button>
+      <p class="note">GPS and timer only prove the street was <b>visited</b>. The worker must confirm <b>collection</b>, and residents verify it.</p>
+    </section>
+
+    <section class="card">
+      <h2>Assigned streets</h2>
+      <ul class="route">
+        <li class="done"><b>10th Main</b> <span class="badge b-done">Collected</span></li>
+        <li class="done"><b>11th Main</b> <span class="badge b-visited">Visited, not confirmed</span></li>
+        <li class="now"><b>12th Main</b> <span class="badge b-visited">In progress</span></li>
+        <li><b>13th Main</b> <span class="badge b-pending">Pending</span></li>
+        <li><b>14th Main</b> <span class="badge b-pending">Pending</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Recollection tasks</h2>
+      <ul class="steps">
+        <li><b>9th Cross</b> - complaint verified<br><span class="muted">Revisit before 5:00 PM</span> <span class="badge b-bad">Urgent</span></li>
+        <li><b>15th Main</b> - 28% miss rate<br><span class="muted">Assigned by authority</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Daily record</h2>
+      <div class="stats"><div><b>3/8</b><span class="muted">Streets done</span></div><div><b>38%</b><span class="muted">Route</span></div><div><b>2</b><span class="muted">Recollections</span></div></div>
+    </section>
+
+    <section class="card">
+      <h2>Performance</h2>
+      <p><b>4.6 / 5</b> resident rating &middot; <b>320</b> points</p>
+      <p class="muted" style="margin-top:6px">Recognition: Top collector, October.</p>
+      <p class="muted">Extra leave: eligible, pending authority approval and replacement availability.</p>
+    </section>
+  </div>
+</main>
+
+<!-- 3. PUBLIC -->
+<main id="public" class="screen">
+  <div class="topbar"><div class="brand">Hello, Anita</div>
+    <select style="width:auto" aria-label="Saved address"><option>12 / 12th Main, Jayanagar</option><option>+ Add new address</option></select></div>
+  <div class="chips">
+    <a href="#p-track">Live tracking</a><a href="#p-confirm">Confirm</a><a href="#p-report">Report</a><a href="#p-complaints">Complaints</a>
+    <a href="#p-special">Special pickup</a><a href="#p-area">My locality</a><a href="#p-guide">Segregation</a>
+  </div>
+  <div class="grid">
+    <section class="card" id="p-track"><h2>Next pickup</h2>
+      <p><b>Today, 7:30 - 8:30 AM</b></p><p class="muted">Collector is 2 streets away, arriving in about 10 min.</p>
+      <div class="map" style="height:180px;margin-top:10px">Live collector map</div></section>
+
+    <section class="card" id="p-confirm"><h2>Was your garbage collected?</h2>
+      <p class="muted">The collector marked 12th Main as visited at 7:42 AM.</p>
+      <div class="yn"><button class="btn green">Yes, it's collected</button><button class="btn red">No, it's not</button></div></section>
+
+    <section class="card" id="p-report"><h2>Report missed collection</h2>
+      <label for="ph">Photo evidence (required)</label><input id="ph" type="file" accept="image/*" capture="environment" required>
+      <label for="nt">What happened?</label><textarea id="nt" placeholder="Garbage still at the gate"></textarea>
+      <button class="btn red big" style="margin-top:12px">Submit complaint</button></section>
+
+    <section class="card" id="p-complaints"><h2>My complaints</h2>
+      <ul class="steps">
+        <li><b>#CMP-1042</b> Missed pickup <span class="badge b-visited">Verified</span><br><span class="muted">Recollection assigned, arriving 2-4 PM</span></li>
+        <li><b>#CMP-1031</b> Overflowing bin <span class="badge b-done">Resolved</span></li>
+      </ul>
+      <button class="btn ghost" style="margin-top:8px">Support a neighbour's complaint (3 open)</button></section>
+
+    <section class="card"><h2>Collection schedule</h2>
+      <table><tr><th>Day</th><th>Time</th><th>Note</th></tr>
+      <tr><td>Mon, Wed, Fri</td><td>7:30 AM</td><td>Wet waste</td></tr>
+      <tr><td>Tue, Sat</td><td>8:00 AM</td><td>Dry waste</td></tr>
+      <tr><td>Fri</td><td>-</td><td><span class="badge b-visited">Delayed 1 hr</span></td></tr></table></section>
+
+    <section class="card" id="p-special"><h2>Book a special pickup</h2>
+      <label for="ev">Occasion</label><select id="ev"><option>Wedding</option><option>Party</option><option>House cleanup</option></select>
+      <div class="row"><div style="flex:1"><label for="dt">Date</label><input id="dt" type="date"></div><div style="flex:1"><label for="tm">Time</label><input id="tm" type="time"></div></div>
+      <label for="wd">Waste details</label><input id="wd" placeholder="e.g. 10 bags, furniture">
+      <button class="btn big" style="margin-top:12px">Continue to payment</button></section>
+
+    <section class="card"><h2>Report overflowing bin or dumping</h2>
+      <input type="file" accept="image/*"><button class="btn ghost" style="margin:8px 0">Use my current location</button>
+      <button class="btn big">Submit report</button></section>
+
+    <section class="card"><h2>Rate your collector</h2>
+      <p>Ravi K. - <b>4.6</b> average</p>
+      <div class="row" style="margin:8px 0"><button class="btn ghost">1</button><button class="btn ghost">2</button><button class="btn ghost">3</button><button class="btn ghost">4</button><button class="btn green">5</button></div>
+      <button class="btn ghost">Send appreciation / nominate</button></section>
+
+    <section class="card" id="p-area"><h2>Jayanagar cleanliness</h2>
+      <div class="stats"><div><b>92%</b><span class="muted">Collected</span></div><div><b>3</b><span class="muted">Unresolved</span></div><div><b>18</b><span class="muted">Resolved</span></div></div>
+      <p class="muted" style="margin-top:10px">History: 20 Oct collected and confirmed. 19 Oct complaint resolved.</p></section>
+
+    <section class="card" id="p-guide"><h2>Segregation guide</h2>
+      <div class="seg"><div style="background:var(--leaf-soft)"><b>Wet</b><br>Food, peels</div><div style="background:#DCE8F8"><b>Dry</b><br>Paper, plastic</div>
+      <div style="background:var(--red-soft)"><b>Sanitary</b><br>Wrap and bin separately</div><div style="background:var(--amber-soft)"><b>Hazardous</b><br>Batteries, bulbs</div></div></section>
+  </div>
+</main>
+
+<!-- 4. ADMIN -->
+<main id="admin" class="screen">
+  <div class="topbar"><div class="brand">Authority dashboard</div><div class="row"><button class="btn ghost">Reports</button><button class="btn">Add street / worker</button></div></div>
+  <div class="kpis">
+    <div class="card kpi"><b>86%</b><span class="muted">Streets verified today</span></div>
+    <div class="card kpi"><b>5</b><span class="muted">Open complaints</span></div>
+    <div class="card kpi"><b style="color:var(--red)">2</b><span class="muted">Streets above threshold</span></div>
+    <div class="card kpi"><b>14/16</b><span class="muted">Workers on duty</span></div>
+  </div>
+  <div class="grid">
+    <section class="card wide"><h2>Street complaints (alert at 25-30% of responses)</h2>
+      <div class="scroll"><table><tr><th>Street</th><th>Responses</th><th>Miss rate</th><th>Status</th><th>Action</th></tr>
+      <tr><td>15th Main</td><td>14</td><td><span class="thr hot"><i style="width:64%"></i></span> 29%</td><td><span class="badge b-bad">Above threshold</span></td><td><button class="btn green">Assign recollection</button></td></tr>
+      <tr><td>9th Cross</td><td>9</td><td><span class="thr hot"><i style="width:80%"></i></span> 33%</td><td><span class="badge b-bad">Photos to review</span></td><td><button class="btn ghost">Review evidence</button></td></tr>
+      <tr><td>12th Main</td><td>11</td><td><span class="thr"><i style="width:18%"></i></span> 9%</td><td><span class="badge b-done">Normal</span></td><td>-</td></tr></table></div>
+      <p class="note">Each street needs a minimum number of responses before an alert fires, so one "No" cannot trigger it.</p></section>
+
+    <section class="card"><h2>Live map</h2><div class="map">All workers and street status</div></section>
+
+    <section class="card"><h2>Worker performance</h2>
+      <table><tr><th>Worker</th><th>Rating</th><th>Visits</th></tr>
+      <tr><td>Ravi K.</td><td>4.6</td><td>98%</td></tr><tr><td>Mahesh S.</td><td>4.2</td><td>91%</td></tr></table></section>
+
+    <section class="card"><h2>Approvals</h2>
+      <ul class="steps"><li>Extra leave: Ravi K.<br><span class="muted">Replacement: Suresh available</span><div class="row" style="margin-top:6px"><button class="btn green">Approve</button><button class="btn ghost">Decline</button></div></li>
+      <li>Recognition: Ravi K. (Top collector)<br><button class="btn green" style="margin-top:6px">Approve</button></li></ul></section>
+
+    <section class="card"><h2>Special pickup bookings</h2>
+      <table><tr><th>Date</th><th>Type</th><th>Paid</th></tr><tr><td>25 Oct</td><td>Wedding</td><td><span class="badge b-done">Yes</span></td></tr><tr><td>27 Oct</td><td>Cleanup</td><td><span class="badge b-visited">Pending</span></td></tr></table></section>
+
+    <section class="card"><h2>Manage</h2>
+      <div class="row"><button class="btn ghost">Workers</button><button class="btn ghost">Users</button><button class="btn ghost">Streets</button><button class="btn ghost">Schedules</button></div></section>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
