@@ -10,8 +10,8 @@ h1{font-size:2.4rem;font-weight:800} h2{font-size:1.35rem;margin-bottom:12px} h3
 button,input,select,textarea{font:inherit}
 :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 
-/* demo switcher (remove in real app) */
-.switcher{position:sticky;top:0;z-index:20;background:var(--ink);display:flex;gap:6px;padding:8px 12px;overflow-x:auto}
+/* demo switcher (z-index 1100 so it sits above Leaflet controls) */
+.switcher{position:sticky;top:0;z-index:1100;background:var(--ink);display:flex;gap:6px;padding:8px 12px;overflow-x:auto}
 .switcher button{background:transparent;color:#cfe3da;border:1px solid #2d5a50;border-radius:20px;padding:6px 14px;cursor:pointer;white-space:nowrap}
 .switcher button.on{background:var(--amber);color:var(--ink);border-color:var(--amber);font-weight:600}
 
@@ -46,11 +46,51 @@ textarea{min-height:80px;resize:vertical}
 .role{cursor:pointer;border:2px solid var(--line);text-align:left;background:#fff;border-radius:12px;padding:20px}
 .role:hover,.role.sel{border-color:var(--leaf);background:var(--leaf-soft)}
 
-/* map placeholder: replace with Leaflet */
+/* maps styling */
 .map{height:260px;border-radius:10px;background:
   repeating-linear-gradient(0deg,transparent 0 38px,#d9e4de 38px 40px),
   repeating-linear-gradient(90deg,transparent 0 38px,#d9e4de 38px 40px),#E8F0EB;
-  display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px dashed var(--muted)}
+  display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px dashed var(--muted);
+  position:relative;overflow:hidden;z-index:1}
+.map.leaflet-container{
+  background:#E8F0EB;
+  border:1px solid var(--line);
+  display:block;
+  font-family:var(--body);
+}
+
+/* map overlay alerts for GPS permissions, errors & unavailable status */
+.map-alert{
+  position:absolute;top:10px;left:10px;right:10px;z-index:1000;
+  background:rgba(255,255,255,0.96);backdrop-filter:blur(4px);
+  border:1px solid var(--line);border-radius:8px;padding:8px 12px;
+  font-size:0.85rem;box-shadow:0 3px 10px rgba(0,0,0,0.08);line-height:1.4;
+}
+.map-alert.alert-bad{border-left:4px solid var(--red);color:var(--ink)}
+.map-alert.alert-warning{border-left:4px solid var(--amber);color:var(--ink)}
+.map-alert.alert-info{border-left:4px solid var(--leaf);color:var(--ink)}
+
+/* custom Leaflet map markers */
+.worker-marker-pulse{
+  position:relative;width:20px;height:20px;
+  background:var(--leaf);border:3px solid #ffffff;border-radius:50%;
+  box-shadow:0 2px 6px rgba(0,0,0,0.35);
+}
+.worker-marker-pulse::after{
+  content:"";position:absolute;top:-6px;left:-6px;
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid var(--leaf);animation:cs-pulse 2s infinite ease-out;
+  opacity:0;pointer-events:none;
+}
+@keyframes cs-pulse{
+  0%{transform:scale(0.6);opacity:0.9}
+  100%{transform:scale(1.7);opacity:0}
+}
+.leaflet-popup-content-wrapper{
+  border-radius:8px;font-family:var(--body);font-size:0.85rem;color:var(--ink);
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+.leaflet-popup-content b{font-family:var(--head);font-weight:700}
 
 /* worker: route line with stops */
 .timer{font-family:var(--head);font-size:3rem;font-weight:800;letter-spacing:1px}

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CleanStreet - Garbage Collection System</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Leaflet CSS (Free & Open Source OpenStreetMap Engine) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="styling.css">
 </head>
 <body>
@@ -35,9 +37,25 @@
 <!-- 2. WORKER -->
 <main id="worker" class="screen">
   <div class="topbar"><div class="brand">Worker: Ravi K.</div>
-    <div class="row"><span class="badge b-done">On duty, GPS active</span><button class="btn ghost">End duty</button></div></div>
+    <div class="row">
+      <span class="badge b-visited" id="worker-gps-badge">Initializing GPS...</span>
+      <button class="btn ghost" id="worker-duty-btn" onclick="toggleWorkerDuty()">End duty</button>
+    </div>
+  </div>
   <div class="grid">
-    <section class="card wide"><h2>Today's route: Jayanagar 4th Block</h2><div class="map" id="worker-map">Map goes here (Leaflet): route, worker dot, street colours</div></section>
+    <section class="card wide">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <h2 style="margin-bottom:0">Today's route: Jayanagar 4th Block</h2>
+        <div class="row">
+          <span id="worker-accuracy-label" class="muted" style="font-size:0.85rem">GPS: Initializing...</span>
+          <button class="btn ghost" style="padding:4px 10px;font-size:0.8rem" onclick="recenterWorkerMap()">Recenter</button>
+        </div>
+      </div>
+      <div style="position:relative">
+        <div class="map" id="worker-map"></div>
+        <div id="worker-map-alert" class="map-alert" style="display:none"></div>
+      </div>
+    </section>
 
     <section class="card">
       <h2>Current street: 12th Main</h2>
@@ -92,9 +110,19 @@
     <a href="#p-special">Special pickup</a><a href="#p-area">My locality</a><a href="#p-guide">Segregation</a>
   </div>
   <div class="grid">
-    <section class="card" id="p-track"><h2>Next pickup</h2>
-      <p><b>Today, 7:30 - 8:30 AM</b></p><p class="muted">Collector is 2 streets away, arriving in about 10 min.</p>
-      <div class="map" style="height:180px;margin-top:10px">Live collector map</div></section>
+    <section class="card" id="p-track">
+      <h2>Next pickup</h2>
+      <p><b>Today, 7:30 - 8:30 AM</b></p>
+      <p class="muted" id="resident-tracking-desc">Tracking live collector telemetry...</p>
+      <div style="position:relative;margin-top:10px">
+        <div class="map" id="resident-map" style="height:220px"></div>
+        <div id="resident-map-alert" class="map-alert" style="display:none"></div>
+      </div>
+      <div class="row" style="margin-top:8px;justify-content:space-between">
+        <span id="resident-collector-status" class="badge b-pending">Awaiting collector signal</span>
+        <button class="btn ghost" style="padding:4px 10px;font-size:0.8rem" onclick="refreshResidentTelemetry()">Refresh</button>
+      </div>
+    </section>
 
     <section class="card" id="p-confirm"><h2>Was your garbage collected?</h2>
       <p class="muted">The collector marked 12th Main as visited at 7:42 AM.</p>
@@ -160,7 +188,17 @@
       <tr><td>12th Main</td><td>11</td><td><span class="thr"><i style="width:18%"></i></span> 9%</td><td><span class="badge b-done">Normal</span></td><td>-</td></tr></table></div>
       <p class="note">Each street needs a minimum number of responses before an alert fires, so one "No" cannot trigger it.</p></section>
 
-    <section class="card"><h2>Live map</h2><div class="map">All workers and street status</div></section>
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin-bottom:0">Live map</h2>
+        <span id="admin-worker-count-badge" class="badge b-pending">0 workers active</span>
+      </div>
+      <div style="position:relative">
+        <div class="map" id="admin-map" style="height:260px"></div>
+        <div id="admin-map-alert" class="map-alert" style="display:none"></div>
+      </div>
+      <p id="admin-map-info" class="muted" style="margin-top:8px;font-size:0.85rem">Showing genuine worker location telemetry when on-duty.</p>
+    </section>
 
     <section class="card"><h2>Worker performance</h2>
       <table><tr><th>Worker</th><th>Rating</th><th>Visits</th></tr>
@@ -178,6 +216,8 @@
   </div>
 </main>
 
+<!-- Leaflet JS (Free & Open Source, No API Key Required) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="script.js"></script>
 </body>
 </html>
